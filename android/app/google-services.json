@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "944442338814",
+    "firebase_url": "https://quoridor-79bf6-default-rtdb.firebaseio.com",
+    "project_id": "quoridor-79bf6",
+    "storage_bucket": "quoridor-79bf6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944442338814:android:730be2bcb39242c1b9a4af",
+        "android_client_info": {
+          "package_name": "com.andQuoridor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeTpeUy0vsR302cbrhEAphcK8zQ_291Ms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
