@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import database from '@react-native-firebase/database';
+import { ref, set } from "firebase/database";
+import { database } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function LobbyScreen() {
   const [rooms, setRooms] = useState([]);
@@ -16,7 +18,7 @@ export default function LobbyScreen() {
 					name: roomsData[key].name
 			})));
 		} catch(e) {
-			console.log(e);
+			
 		}
   }, []);
 
@@ -24,13 +26,13 @@ export default function LobbyScreen() {
     <View style={styles.container}>
 			<Link href="/multi" asChild>
 				<TouchableWithoutFeedback onPress={() => {
-					try {
+					//try {
 						const newRef = database().ref('/rooms').push();
 						newRef
 							.set({name: myName});
-					} catch (e) {
-						console.log(e);
-					}
+					//} catch (e) {
+						//console.log(e);
+					//}
 				}}>
 					<Text style={styles.createText}>Create Room</Text>
 				</TouchableWithoutFeedback>
