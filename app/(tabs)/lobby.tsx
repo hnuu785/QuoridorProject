@@ -1,45 +1,56 @@
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { ref, set } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { database } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 export default function LobbyScreen() {
   const [rooms, setRooms] = useState([]);
+	const [myName, setMyName] = useState('');
   
   useEffect(() => {
-    try {
-			const myName = AsyncStorage.getItem('myName');
-			const roomsData = database().ref('/rooms').once('value').val();
-			setRooms(Object.keys(roomsData).map(key => ({
-					id: key,
-					name: roomsData[key].name
-			})));
-		} catch(e) {
-			
-		}
+		const fetchRooms = async () => {
+			const value = await AsyncStorage.getItem('myName');
+			setMyName(value);
+		};
+		fetchRooms();
+		const roomsRef = ref(database, '/rooms');
+		get(roomsRef).then((snapshot) => {
+			if (snapshot.exists()) {
+				const roomsData = snapshot.val();
+				setRooms(
+					Object.keys(roomsData).map(key => ({
+						id: key,
+						name: roomsData[key].name,
+					}))
+				);
+				console.log('exists');
+			}
+			else {
+				console.log('not exists');
+			}
+		});
   }, []);
-
+	
+	const createRoom = () => {
+		const roomsRef = ref(database, '/rooms');
+		set(roomsRef, {
+			name: myName,
+		});
+		AsyncStorage.setItem('ang', 'gimoti');
+	};
+	
   return (
     <View style={styles.container}>
 			<Link href="/multi" asChild>
-				<TouchableWithoutFeedback onPress={() => {
-					//try {
-						const newRef = database().ref('/rooms').push();
-						newRef
-							.set({name: myName});
-					//} catch (e) {
-						//console.log(e);
-					//}
-				}}>
+				<TouchableWithoutFeedback onPress={createRoom}>
 					<Text style={styles.createText}>Create Room</Text>
 				</TouchableWithoutFeedback>
 			</Link>
       <ScrollView>
         {rooms.map(room => {
-					<Link href="/multi" style={styles.roomText}>{room.name}</Link>
+					<Link href="/multi" key={room.id} style={styles.roomText}>{room.name}</Link>
         })}
       </ScrollView>
     </View>
