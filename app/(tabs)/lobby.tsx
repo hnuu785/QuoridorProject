@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, child } from "firebase/database";
 import { database } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,18 +14,19 @@ export default function LobbyScreen() {
 			const value = await AsyncStorage.getItem('myName');
 			setMyName(value);
 		};
+		
 		fetchRooms();
+		
 		const roomsRef = ref(database, '/rooms');
+		
 		get(roomsRef).then((snapshot) => {
 			if (snapshot.exists()) {
+				//setRooms(snapshot.val());
 				const roomsData = snapshot.val();
-				setRooms(
-					Object.keys(roomsData).map(key => ({
-						id: key,
-						name: roomsData[key].name,
-					}))
-				);
-				console.log('exists');
+				setRooms(Object.keys(roomsData).map(key => ({
+					id: key,
+					name: roomsData[key].name,
+				})));
 			}
 			else {
 				console.log('not exists');
@@ -33,13 +34,26 @@ export default function LobbyScreen() {
 		});
   }, []);
 	
+	useEffect(() => {
+    console.log(rooms);
+  }, [rooms]);
+	
 	const createRoom = () => {
-		const roomsRef = ref(database, '/rooms');
+		const roomsRef = ref(database, '/rooms/' + Date.now());
 		set(roomsRef, {
 			name: myName,
 		});
-		AsyncStorage.setItem('ang', 'gimoti');
 	};
+	
+	const ViewRooms = () => {
+		return (
+			<>
+				{rooms.map(room => {
+							<Link href="/multi" key={room.id} style={styles.roomText}>{room.name}</Link>
+				})}
+			</>
+		);
+	}
 	
   return (
     <View style={styles.container}>
@@ -49,9 +63,9 @@ export default function LobbyScreen() {
 				</TouchableWithoutFeedback>
 			</Link>
       <ScrollView>
-        {rooms.map(room => {
-					<Link href="/multi" key={room.id} style={styles.roomText}>{room.name}</Link>
-        })}
+				{rooms.map(room => (
+					<Link href="/multi" key={room.name} style={styles.roomText}>{room.name}</Link>
+        ))}
       </ScrollView>
     </View>
   );
