@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Image } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, Image, Text } from 'react-native';
 
 export default function SingleScreen() {
   const [p1x, setP1x] = useState(160);
@@ -23,7 +23,6 @@ export default function SingleScreen() {
         hor.push(
           <TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
             if (turn == true && p1HC > 0) {
-              console.log(p1HC);
               setWalls(currentWalls => [...currentWalls,
               <View style={{...styles.horWall, left: j * 40, top: i * 40}}></View>]);
               setP1HC(p1HC - 1);

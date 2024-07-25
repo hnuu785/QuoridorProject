@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { ref, set, get, child } from "firebase/database";
+import { ref, set, get, child, update } from "firebase/database";
 import { database } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,18 +14,16 @@ export default function LobbyScreen() {
 			const value = await AsyncStorage.getItem('myName');
 			setMyName(value);
 		};
-		
 		fetchRooms();
 		
 		const roomsRef = ref(database, '/rooms');
 		
 		get(roomsRef).then((snapshot) => {
 			if (snapshot.exists()) {
-				//setRooms(snapshot.val());
 				const roomsData = snapshot.val();
 				setRooms(Object.keys(roomsData).map(key => ({
 					id: key,
-					name: roomsData[key].name,
+					name: roomsData[key].hostName,
 				})));
 			}
 			else {
@@ -38,22 +36,24 @@ export default function LobbyScreen() {
     console.log(rooms);
   }, [rooms]);
 	
-	const createRoom = () => {
-		const roomsRef = ref(database, '/rooms/' + Date.now());
-		set(roomsRef, {
-			name: myName,
+	const createRoom = async () => {
+		const roomId = Date.now();
+		await AsyncStorage.setItem('myRoomId', roomId);
+		const roomsRef = ref(database, '/rooms/' + roomId);
+		await set(roomsRef, {
+			hostName: myName,
+			p1x: 160,
+			p1y: 0,
+			p2x: 160,
+			p2y: 320,
+			turn: true,
+			p1HC: 10,
+			p1VC: 10,
+			p2HC: 10,
+			p2VC: 10,
+			walls: [{type: 'init', left: 0, top: 0}],
 		});
 	};
-	
-	const ViewRooms = () => {
-		return (
-			<>
-				{rooms.map(room => {
-							<Link href="/multi" key={room.id} style={styles.roomText}>{room.name}</Link>
-				})}
-			</>
-		);
-	}
 	
   return (
     <View style={styles.container}>
@@ -64,7 +64,17 @@ export default function LobbyScreen() {
 			</Link>
       <ScrollView>
 				{rooms.map(room => (
-					<Link href="/multi" key={room.name} style={styles.roomText}>{room.name}</Link>
+					<Link href="/multi" key={room.id} asChild>
+						<TouchableWithoutFeedback onPress={() => {
+								AsyncStorage.setItem('myRoomId', room.id);
+								const roomsRef = ref(database, '/rooms/' + room.id);
+								update(roomsRef, {
+									guestName: myName,
+								});
+							}}>
+							<Text style={styles.roomText}>{room.name}</Text>
+						</TouchableWithoutFeedback>
+					</Link>
         ))}
       </ScrollView>
     </View>
@@ -89,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 27,
     textAlign: 'center',
     borderRadius: 10,
-    marginHorizontal: 30,
+    marginHorizontal: 90,
     marginTop: 20,
   },
 });
