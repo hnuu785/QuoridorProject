@@ -42,10 +42,10 @@ export default function LobbyScreen() {
 		const roomsRef = ref(database, '/rooms/' + roomId);
 		await set(roomsRef, {
 			hostName: myName,
-			p1x: 160,
+			p1x: 4,
 			p1y: 0,
-			p2x: 160,
-			p2y: 320,
+			p2x: 4,
+			p2y: 8,
 			turn: true,
 			p1HC: 10,
 			p1VC: 10,

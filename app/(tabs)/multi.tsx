@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Image, Text } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions } from 'react-native';
 import { database } from '../../firebaseConfig';
 import { ref, set, get, child, update, onValue } from "firebase/database";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+const length = windowWidth / 9;
 
 export default function MultiScreen() {
 	const [game, setGame] = useState({});
@@ -45,7 +49,7 @@ export default function MultiScreen() {
 								...prevGame,
 								p1HC: prevGame.p1HC - 1,
 								turn: false,
-								walls: [...prevGame.walls, {type: 'hor', left: j * 40, top: i * 40}],
+								walls: [...prevGame.walls, {type: 'hor', left: j * length, top: i * length}],
 							}));
 						}
 						else if (game.turn == false && game.p2HC > 0) {
@@ -53,11 +57,11 @@ export default function MultiScreen() {
 								...prevGame,
 								p2HC: prevGame.p2HC - 1,
 								turn: true,
-								walls: [...prevGame.walls, {type: 'hor', left: j * 40, top: i * 40}],
+								walls: [...prevGame.walls, {type: 'hor', left: j * length, top: i * length}],
 							}));
 						}
 					}}>
-						<View style={{...styles.fieldHor, left: j * 40, top: i * 40}}></View>
+						<View style={{...styles.fieldHor, left: j * length, top: i * length}}></View>
 					</TouchableWithoutFeedback>
 				);
 			}
@@ -77,7 +81,7 @@ export default function MultiScreen() {
 								...prevGame,
 								p1VC: prevGame.p1VC - 1,
 								turn: false,
-								walls: [...prevGame.walls, {type: 'ver', left: i * 40, top: j * 40}],
+								walls: [...prevGame.walls, {type: 'ver', left: i * length, top: j * length}],
 							}));
             }
             else if (game.turn == false && game.p2VC > 0) {
@@ -85,11 +89,11 @@ export default function MultiScreen() {
 								...prevGame,
 								p2VC: prevGame.p2VC - 1,
 								turn: true,
-								walls: [...prevGame.walls, {type: 'ver', left: i * 40, top: j * 40}],
+								walls: [...prevGame.walls, {type: 'ver', left: i * length, top: j * length}],
 							}));
             }
       		}}>
-          	<View style={{...styles.fieldVer, left: i * 40, top: j * 40}}></View>
+          	<View style={{...styles.fieldVer, left: i * length, top: j * length}}></View>
           </TouchableWithoutFeedback>
 				);
       }
@@ -102,14 +106,14 @@ export default function MultiScreen() {
     if (game.turn == true) {
 			setGame(prevGame => ({
 				...prevGame,
-				p1x: prevGame.p1x + 40,
+				p1x: prevGame.p1x + 1,
 				turn: false,
 			}));
     }
-    else if (game.turn == false){
+    else {
 			setGame(prevGame => ({
 				...prevGame,
-				p2x: prevGame.p2x + 40,
+				p2x: prevGame.p2x + 1,
 				turn: true,
 			}));
     }
@@ -118,14 +122,14 @@ export default function MultiScreen() {
     if (game.turn == true) {
 			setGame(prevGame => ({
 				...prevGame,
-				p1x: prevGame.p1x - 40,
+				p1x: prevGame.p1x - 1,
 				turn: false,
 			}));
     }
     else {
 			setGame(prevGame => ({
 				...prevGame,
-				p2x: prevGame.p2x - 40,
+				p2x: prevGame.p2x - 1,
 				turn: true,
 			}));
     }
@@ -134,14 +138,14 @@ export default function MultiScreen() {
     if (game.turn == true) {
 			setGame(prevGame => ({
 				...prevGame,
-				p1y: prevGame.p1y + 40,
+				p1y: prevGame.p1y + 1,
 				turn: false,
 			}));
     }
     else {
 			setGame(prevGame => ({
 				...prevGame,
-				p2y: prevGame.p2y + 40,
+				p2y: prevGame.p2y + 1,
 				turn: true,
 			}));
     }
@@ -150,14 +154,14 @@ export default function MultiScreen() {
     if (game.turn == true) {
 			setGame(prevGame => ({
 				...prevGame,
-				p1y: prevGame.p1y - 40,
+				p1y: prevGame.p1y - 1,
 				turn: false,
 			}));
     }
     else {
 			setGame(prevGame => ({
 				...prevGame,
-				p2y: prevGame.p2y - 40,
+				p2y: prevGame.p2y - 1,
 				turn: true,
 			}));
     }
@@ -166,46 +170,46 @@ export default function MultiScreen() {
 	const renderPlayer = () => {
     return (
       <>
-        <Image style={{...styles.pawn, left: game.p1x, top: game.p1y}} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/b01ef9b4f2c29b730c5dd509f0dc36d2'}}/>
-        <Image style={{...styles.pawn, left: game.p2x, top: game.p2y}} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/90b77e5979766ced2ece86cb02713f1d'}}/>
+        <Image style={{...styles.pawn, left: game.p1x * length, top: game.p1y * length }} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/b01ef9b4f2c29b730c5dd509f0dc36d2'}}/>
+        <Image style={{...styles.pawn, left: game.p2x * length, top: game.p2y * length }} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/90b77e5979766ced2ece86cb02713f1d'}}/>
         {game.turn == true ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: game.p1x + 40, top: game.p1y }}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * length + length, top: game.p1y * length }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: game.p2x + 40, top: game.p2y }}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * length + length, top: game.p2y * length}}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: game.p1x - 40, top: game.p1y }}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * length - length, top: game.p1y * length}}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: game.p2x - 40, top: game.p2y }}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * length - length, top: game.p2y * length}}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: game.p1x, top: game.p1y + 40 }}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * length, top: game.p1y * length + length }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: game.p2x, top: game.p2y + 40 }}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * length, top: game.p2y * length + length }}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: game.p1x, top: game.p1y - 40}}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * length, top: game.p1y * length - length}}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: game.p2x, top: game.p2y - 40}}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * length, top: game.p2y * length - length}}></View>
           </TouchableWithoutFeedback>
         ): null}
       </>
@@ -227,24 +231,11 @@ export default function MultiScreen() {
     <View style={styles.container}>
 			<Text>{game.hostName}</Text>
 			<Text>{game.guestName}</Text>
-			<View style={styles.topMenu}>
-				<View style={{...styles.horWall, left: 50, top: 50,}}></View>
-				<View style={{...styles.verWall, left: 250, top: 20,}}></View>
-			</View>
 			<View style={styles.gameContainer}>
 				{renderHor()}
 				{renderVer()}
 				{renderPlayer()}
-				{/*Object.keys(walls).map(key => 
-					walls[key].type == 'hor' ?
-						<View style={{...styles.horwall, left: walls[key].left, top: walls[key].top}}></View>
-					: <View style={{...styles.verwall, left: walls[key].left, top: walls[key].top}}></View>
-				)*/}
 				{renderWalls()}
-			</View>
-			<View style={styles.bottomMenu}>
-				<View style={{...styles.horWall, left: 50, top: 50,}}></View>
-				<View style={{...styles.verWall, left: 250, top: 20,}}></View>
 			</View>
     </View>
   );
@@ -253,56 +244,43 @@ export default function MultiScreen() {
 const styles = StyleSheet.create({
   gameContainer: {
     backgroundColor: 'tomato',
-    width: 360,
-    height: 360,
+    width: windowWidth,
+    height: windowWidth,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  topMenu: {
-    backgroundColor: 'grey',
-    width: 360,
-    height: 120,
-    marginTop: 100,
-    flexDirection: 'row',
-  },
-  bottomMenu: {
-    backgroundColor: 'grey',
-    width: 360,
-    height: 120,
-    flexDirection: 'row',
-  },
   pawn: {
-    width: 40,
-    height: 40,
+    width: length,
+    height: length,
     position: 'absolute',
   },
   moveTile: {
-    width: 40,
-    height: 40,
+    width: length,
+    height: length,
     position: 'absolute',
     backgroundColor: 'teal',
   },
   horWall: {
-    width: 80,
+    width: length * 2,
     height: 10,
     backgroundColor: 'white',
     position: 'absolute',
   },
   verWall: {
     width: 10,
-    height: 80,
+    height: length * 2,
     backgroundColor: 'white',
     position: 'absolute',
   },
   fieldHor: {
-    width: 40,
+    width: length,
     height: 5,
     backgroundColor: 'black',
     position: 'absolute',
   },
   fieldVer: {
     width: 5,
-    height: 40,
+    height: length,
     backgroundColor: 'black',
     position: 'absolute',
   },

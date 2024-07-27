@@ -12,7 +12,12 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
+				tabBarStyle: {
+          backgroundColor: 'transparent', // Set the background color to transparent
+          borderTopWidth: 0, // Remove the top border
+          elevation: 0, // Remove shadow on Android
+        },
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
@@ -21,17 +26,31 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
+					href: null,
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+			<Tabs.Screen
+				name="createName"
+				options={{
+					href: null,
+					title: 'createName',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="single"
+				options={{href: null}}
+			/>
+			<Tabs.Screen
+				name="multi"
+				options={{href: null}}
+			/>
+			<Tabs.Screen
+				name="lobby"
+				options={{href: null}}
+			/>
+		</Tabs>
   );
 }
