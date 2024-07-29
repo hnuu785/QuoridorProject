@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions, Alert, Button } from 'react-native';
+import { Link } from 'expo-router';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -163,13 +164,44 @@ export default function SingleScreen() {
     );
   };
 
+	useEffect(() => {
+		const win = async () => {
+			await console.log(p1y);
+			if (p1y == length * 8) {
+				await Alert.alert('End of game', 'Player1 win!');
+			}
+			else if (p2y == 0) {
+				await Alert.alert('End of game', 'Player2 win!');
+			}
+		};
+		win();
+	}, [p1y, p2y]);
+
+	if (p1y == length * 8) {
+		Alert.alert('End of this game', 'Player1 win!');
+	}
+	else if (p2y == 0) {
+		Alert.alert('End of this game', 'Player2 win!');
+	}
+
+	const exit = () => {
+		
+	}
+
   return (
-    <View style={styles.gameContainer}>
-      {renderHor()}
-      {renderVer()}
-      {renderPlayer()}
-      {walls}
-    </View>
+		<>
+	    <View style={styles.gameContainer}>
+				{renderHor()}
+				{renderVer()}
+				{renderPlayer()}
+				{walls}
+	    </View>
+			<Link href='/' asChild>
+				<TouchableWithoutFeedback>
+					<Text style={styles.exitBtn}>EXIT</Text>
+				</TouchableWithoutFeedback>
+			</Link>
+		</>
   );
 }
 
@@ -214,4 +246,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     position: 'absolute',
   },
+	exitBtn: {
+		width: 50,
+		height: 20,
+		backgroundColor: 'skyblue',
+	},
 });

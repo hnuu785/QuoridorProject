@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } f
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { ref, set, get, child, update } from "firebase/database";
-import { database } from '../../firebaseConfig';
+import { database } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LobbyScreen() {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions } from 'react-native';
-import { database } from '../../firebaseConfig';
+import { database } from '../firebaseConfig';
 import { ref, set, get, child, update, onValue } from "firebase/database";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,10 +31,19 @@ export default function MultiScreen() {
 	}, []);
 	
 	useEffect(() => {
+		const win = async () => {
+			if (game.p1y == 8) {
+				Alert.alert('End of game', 'Player1 win!');
+			}
+			if (game.p2y == 0) {
+				Alert.alert('End of game', 'Player2 win!');
+			}
+		}
 		const updateGame = async () => {
 			const roomRef = ref(database, '/rooms/' + await AsyncStorage.getItem('myRoomId'));
 			await update(roomRef, game);
 		}
+		win();
 		updateGame();
 	}, [game]);
 		
