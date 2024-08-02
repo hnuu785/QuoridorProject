@@ -10,8 +10,8 @@ export default function HomeScreen() {
       <Text style={styles.title}>QUORIDOR</Text>
     </View>
     <View style={styles.menuContainer}>
-			<Link href="/single" style={styles.playMenuText}>Singleplay</Link>
-			<Link href="/createName" style={styles.playMenuText}>Multiplay</Link>
+			<Link href="/single" style={styles.playMenuText}>OFFLINE</Link>
+			<Link href="/createName" style={styles.playMenuText}>ONLINE</Link>
     </View>
   </View>);
 }

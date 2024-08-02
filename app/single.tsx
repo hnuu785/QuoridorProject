@@ -7,10 +7,10 @@ const windowHeight = Dimensions.get('window').height;
 const length = windowWidth / 9;
 
 export default function SingleScreen() {
-	const [p1x, setP1x] = useState(length * 4);
+	const [p1x, setP1x] = useState(4);
   const [p1y, setP1y] = useState(0);
-  const [p2x, setP2x] = useState(length * 4);
-  const [p2y, setP2y] = useState(length * 8);
+  const [p2x, setP2x] = useState(4);
+  const [p2y, setP2y] = useState(8);
   const [turn, setTurn] = useState(true);
   // p1 true p2 false
 
@@ -21,6 +21,18 @@ export default function SingleScreen() {
   const [p2HC, setP2HC] = useState(10);
   const [p2VC, setP2VC] = useState(10);
 
+	useEffect(() => {
+		const win = async () => {
+			if (p1y == length * 8) {
+				await Alert.alert('End of game', 'Player1 win!');
+			}
+			else if (p2y == 0) {
+				await Alert.alert('End of game', 'Player2 win!');
+			}
+		};
+		win();
+	}, [p1y, p2y]);
+	
   const renderHor = () => {
     const hor = [];
     for (let i = 1; i < 9; i++) {
@@ -29,20 +41,24 @@ export default function SingleScreen() {
           <TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
             if (turn == true && p1HC > 0) {
               setWalls(currentWalls => [...currentWalls,
-              <View key={`${i}-${j}`} style={{...styles.horWall, left: j * length, top: i * length}}></View>]);
+              <View key={`${i}-${j}-1`} style={{...styles.horWall, left: j * length, top: i * length}}></View>]);
+							setWalls(currentWalls => [...currentWalls,
+              <View key={`${i}-${j}-2`} style={{...styles.horWall, left: (j + 1) * length, top: i * length}}></View>]);
               setP1HC(p1HC - 1);
               setTurn(false);
             }
             else if (turn == false && p2HC > 0) {
               setWalls(currentWalls => [...currentWalls,
-              <View key={`${i}-${j}`} style={{...styles.horWall, left: j * length, top: i * length}}></View>]);
-              console.log(p2HC);
+              <View key={`${i}-${j}-1`} style={{...styles.horWall, left: j * length, top: i * length}}></View>]);
+							setWalls(currentWalls => [...currentWalls,
+              <View key={`${i}-${j}-2`} style={{...styles.horWall, left: (j + 1) * length, top: i * length}}></View>]);
               setP2HC(p2HC - 1);
               setTurn(true);
             }
           }}>
           <View key={`${i}-${j}`} style={{...styles.fieldHor, left: j * length, top: i * length}}></View>
-          </TouchableWithoutFeedback>);
+          </TouchableWithoutFeedback>
+				);
       }
     }
     return hor;
@@ -56,61 +72,65 @@ export default function SingleScreen() {
           <TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
             if (turn == true && p1VC > 0) {
               setWalls(currentWalls => [...currentWalls,
-              <View key={`${i}-${j}`} style={{...styles.verWall, left: i * length, top: j * length}}></View>]);
+              <View key={`${i}-${j}-1`} style={{...styles.verWall, left: i * length, top: j * length}}></View>]);
+							setWalls(currentWalls => [...currentWalls,
+              <View key={`${i}-${j}-2`} style={{...styles.verWall, left: i * length, top: (j + 1) * length}}></View>]);
               setP1VC(p1VC - 1);
               setTurn(false);
             }
             else if (turn == false && p2VC > 0) {
               setWalls(currentWalls => [...currentWalls,
-              <View key={`${i}-${j}`} style={{...styles.verWall, left: i * length, top: j * length}}></View>]);
+              <View key={`${i}-${j}-1`} style={{...styles.verWall, left: i * length, top: j * length}}></View>]);
+							setWalls(currentWalls => [...currentWalls,
+              <View key={`${i}-${j}-2`} style={{...styles.verWall, left: i * length, top: (j + 1) * length}}></View>]);
               setP2VC(p2VC - 1);
               setTurn(true);
             }
           }}>
           <View key={`${i}-${j}`} style={{...styles.fieldVer, left: i * length, top: j * length}}></View>
-          </TouchableWithoutFeedback>);
+          </TouchableWithoutFeedback>
+				);
       }
     }
     return ver;
   };
 
   const playerMoveRight = () => {
-    if (turn == true) {
-      setP1x(p1x + length);
+    if (turn === true) {
+      setP1x(p1x + 1);
       setTurn(false);
-    }
-    else if (turn == false){
-      setP2x(p2x + length);
+    } else if (turn === false) {
+      setP2x(p2x + 1);
       setTurn(true);
     }
   };
+
   const playerMoveLeft = () => {
-    if (turn == true) {
-      setP1x(p1x - length);
+    if (turn === true) {
+      setP1x(p1x - 1);
       setTurn(false);
-    }
-    else {
-      setP2x(p2x - length);
+    } else if (turn === false) {
+      setP2x(p2x - 1);
       setTurn(true);
     }
   };
+
   const playerMoveUp = () => {
-    if (turn == true) {
-      setP1y(p1y + length);
+    if (turn === true) {
+      setP1y(p1y - 1);
       setTurn(false);
-    }
-    else {
-      setP2y(p2y + length);
+    } else if (turn === false) {
+      setP2y(p2y - 1);
       setTurn(true);
     }
   };
+
   const playerMoveDown = () => {
-    if (turn == true) {
-      setP1y(p1y - length);
+    if (turn === true) {
+      setP1y(p1y + 1);
       setTurn(false);
-    }
-    else {
-      setP2y(p2y - length);
+    } else if (turn === false) {
+      setP2y(p2y + 1);
       setTurn(true);
     }
   };
@@ -118,75 +138,71 @@ export default function SingleScreen() {
   const renderPlayer = () => {
     return (
       <>
-        <Image style={{...styles.pawn, left: p1x, top: p1y}} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/b01ef9b4f2c29b730c5dd509f0dc36d2'}}/>
-        <Image style={{...styles.pawn, left: p2x, top: p2y}} source={{uri: 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/90b77e5979766ced2ece86cb02713f1d'}}/>
-        {turn == true ? (
+				<Image style={{...styles.pawn, left: p1x * length, top: p1y * length }} source={require('../assets/images/p1Pawn.png')}/>
+        <Image style={{...styles.pawn, left: p2x * length, top: p2y * length }} source={require('../assets/images/p2Pawn.png')}/>
+        {turn == true && isMoveValid(p1x, p1y, 'right') ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: p1x + length, top: p1y }}></View>
+            <View style={{ ...styles.moveTile, left: p1x * length + length, top: p1y * length }}></View>
           </TouchableWithoutFeedback>
-        ) : null}
-        {turn == false ? (
-          <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: p2x + length, top: p2y }}></View>
+        ) : null }
+				{turn == false && isMoveValid(p2x, p2y, 'right') ? (
+					<TouchableWithoutFeedback onPress={playerMoveRight}>
+            <View style={{ ...styles.moveTile, left: p2x * length + length, top: p2y * length }}></View>
           </TouchableWithoutFeedback>
-        ): null}
-        {turn == true ? (
+				) : null }
+        {turn == true && isMoveValid(p1x, p1y, 'left') ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: p1x - length, top: p1y }}></View>
+            <View style={{ ...styles.moveTile, left: p1x * length - length, top: p1y * length }}></View>
           </TouchableWithoutFeedback>
-        ) : null}
-        {turn == false ? (
-          <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: p2x - length, top: p2y }}></View>
+        ) : null }
+				{turn == false && isMoveValid(p2x, p2y, 'left') ? (
+					<TouchableWithoutFeedback onPress={playerMoveLeft}>
+            <View style={{ ...styles.moveTile, left: p2x * length - length, top: p2y * length }}></View>
           </TouchableWithoutFeedback>
-        ): null}
-        {turn == true ? (
+				) : null }
+        {turn == true && isMoveValid(p1x, p1y, 'up') ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: p1x, top: p1y + length }}></View>
+            <View style={{ ...styles.moveTile, left: p1x * length, top: (p1y - 1) * length }}></View>
           </TouchableWithoutFeedback>
-        ) : null}
-        {turn == false ? (
-          <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: p2x, top: p2y + length }}></View>
+        ) : null }
+				{turn == false && isMoveValid(p2x, p2y, 'up') ? (
+					<TouchableWithoutFeedback onPress={playerMoveUp}>
+            <View style={{ ...styles.moveTile, left: p2x * length, top: (p2y - 1) * length }}></View>
           </TouchableWithoutFeedback>
-        ): null}
-        {turn == true ? (
+				) : null }
+				{turn == true && isMoveValid(p1x, p1y, 'down') ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: p1x, top: p1y - length }}></View>
+            <View style={{ ...styles.moveTile, left: p1x * length, top: (p1y + 1) * length }}></View>
           </TouchableWithoutFeedback>
-        ) : null}
-        {turn == false ? (
-          <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: p2x, top: p2y - length }}></View>
+        ) : null }
+				{turn == false && isMoveValid(p2x, p2y, 'down') ? (
+					<TouchableWithoutFeedback onPress={playerMoveDown}>
+            <View style={{ ...styles.moveTile, left: p2x * length, top: (p2y + 1) * length }}></View>
           </TouchableWithoutFeedback>
-        ): null}
+				) : null }
       </>
     );
   };
 
-	useEffect(() => {
-		const win = async () => {
-			await console.log(p1y);
-			if (p1y == length * 8) {
-				await Alert.alert('End of game', 'Player1 win!');
-			}
-			else if (p2y == 0) {
-				await Alert.alert('End of game', 'Player2 win!');
-			}
-		};
-		win();
-	}, [p1y, p2y]);
-
-	if (p1y == length * 8) {
-		Alert.alert('End of this game', 'Player1 win!');
-	}
-	else if (p2y == 0) {
-		Alert.alert('End of this game', 'Player2 win!');
-	}
-
-	const exit = () => {
-		
-	}
+	const isMoveValid = (x, y, direction) => {
+    for (let wall of walls) {
+			const wallLeft = wall.props.style.left;
+			const wallTop = wall.props.style.top;
+      if (direction == 'right' && wallLeft <= (x + 1) * length + 0.01 && wallLeft >= (x + 1) * length - 0.01 && wallTop == y * length) {
+        return false;
+      }
+      if (direction == 'left' && wallLeft == x * length && wallTop == y * length) {
+        return false;
+      }
+      if (direction == 'up' && wallLeft <= x * length + 0.01 && wallLeft >= x * length - 0.01 && wallTop <= y * length + 0.01 && wallTop >= y * length - 0.01) {
+        return false;
+      }
+      if (direction == 'down' && wallLeft <= x * length + 0.01 && wallLeft >= x * length - 0.01 && wallTop <= (y + 1) * length + 0.01 && wallTop >= (y + 1) * length - 0.01) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   return (
 		<>
@@ -223,14 +239,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'teal',
   },
   horWall: {
-    width: length * 2,
+    width: length,
     height: 10,
     backgroundColor: 'white',
     position: 'absolute',
   },
   verWall: {
     width: 10,
-    height: length * 2,
+    height: length,
     backgroundColor: 'white',
     position: 'absolute',
   },
