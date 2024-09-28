@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions, Alert, Button } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, Text, Image, Dimensions, Alert, Button } from 'react-native';
 import { Link } from 'expo-router';
 
 const windowWidth = Dimensions.get('window').width;
@@ -138,8 +138,8 @@ export default function SingleScreen() {
   const renderPlayer = () => {
     return (
       <>
-				<Image style={{...styles.pawn, left: p1x * length, top: p1y * length }} source={require('../assets/images/p1Pawn.png')}/>
-        <Image style={{...styles.pawn, left: p2x * length, top: p2y * length }} source={require('../assets/images/p2Pawn.png')}/>
+				<Image style={{...styles.pawn, left: p1x * length, top: p1y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/64f5a7a595ec652823c94f4fcf2abe09"}}/>
+        <Image style={{...styles.pawn, left: p2x * length, top: p2y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/cacb3335a59b92eedefc10dfaf3e9dea"}}/>
         {turn == true && isMoveValid(p1x, p1y, 'right') ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
             <View style={{ ...styles.moveTile, left: p1x * length + length, top: p1y * length }}></View>
@@ -240,12 +240,12 @@ const styles = StyleSheet.create({
   },
   horWall: {
     width: length,
-    height: 10,
+    height: 3,
     backgroundColor: 'white',
     position: 'absolute',
   },
   verWall: {
-    width: 10,
+    width: 3,
     height: length,
     backgroundColor: 'white',
     position: 'absolute',

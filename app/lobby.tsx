@@ -10,11 +10,11 @@ export default function LobbyScreen() {
 	const [myName, setMyName] = useState('');
   
   useEffect(() => {
-		const fetchRooms = async () => {
+		const fetchName = async () => {
 			const value = await AsyncStorage.getItem('myName');
 			setMyName(value);
 		};
-		fetchRooms();
+		fetchName();
 		
 		const roomsRef = ref(database, '/rooms');
 		
@@ -37,26 +37,32 @@ export default function LobbyScreen() {
   }, [rooms]);
 	
 	const createRoom = async () => {
-		const roomId = Date.now();
-		await AsyncStorage.setItem('myRoomId', roomId);
-		const roomsRef = ref(database, '/rooms/' + roomId);
-		await set(roomsRef, {
-			hostName: myName,
-			p1x: 4,
-			p1y: 0,
-			p2x: 4,
-			p2y: 8,
-			turn: true,
-			p1HC: 10,
-			p1VC: 10,
-			p2HC: 10,
-			p2VC: 10,
-			walls: [{type: 'init', left: 0, top: 0}],
-		});
+		const roomId = String(Date.now());
+		try {
+			await AsyncStorage.setItem('myRoomId', roomId);
+			const roomsRef = ref(database, '/rooms/' + roomId);
+			await set(roomsRef, {
+				hostName: myName,
+				p1x: 4,
+				p1y: 0,
+				p2x: 4,
+				p2y: 8,
+				turn: true,
+				p1HC: 10,
+				p1VC: 10,
+				p2HC: 10,
+				p2VC: 10,
+				walls: [{type: 'init', left: 0, top: 0}],
+			});
+		}
+		 catch (e) {
+			console.log(e);
+		}
 	};
 	
   return (
     <View style={styles.container}>
+			<Text style={styles.createText}>{myName}</Text>
 			<Link href="/multi" asChild>
 				<TouchableWithoutFeedback onPress={createRoom}>
 					<Text style={styles.createText}>Create Room</Text>

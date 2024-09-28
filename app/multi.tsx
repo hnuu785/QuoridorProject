@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Image, Text, Dimensions } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, TouchableWithoutFeedback, Text, Image, Dimensions, Alert } from 'react-native';
 import { database } from '../firebaseConfig';
 import { ref, set, get, child, update, onValue } from "firebase/database";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,8 +14,20 @@ export default function MultiScreen() {
 	const [game, setGame] = useState({});
 	const [walls, setWalls] = useState({});
 	const [myName, setMyName] = useState('');
+	const [roomID, setRoomID] = useState('');
 	
-	useEffect(() => {
+	/*useEffect(() => {
+		const fetchStorage = async () => {
+			const valueID = await AsyncStorage.getItem('myRoomId');
+			setRoomID(valueID);
+			const valueName = await AsyncStorage.getItem('myName');
+			setMyName(valueName);
+		};
+		fetchStorage();
+		
+	}, []);*/
+	
+		useEffect(() => {
 		const fetchGame = async () => {
 			const roomRef = ref(database, '/rooms/' + await AsyncStorage.getItem('myRoomId'));
 			await onValue(roomRef, (snapshot) => {
@@ -34,19 +47,10 @@ export default function MultiScreen() {
 	}, []);
 	
 	useEffect(() => {
-		const win = async () => {
-			if (game.p1y == 8) {
-				Alert.alert('End of game', 'Player1 win!');
-			}
-			if (game.p2y == 0) {
-				Alert.alert('End of game', 'Player2 win!');
-			}
-		}
 		const updateGame = async () => {
-			const roomRef = ref(database, '/rooms/' + await AsyncStorage.getItem('myRoomId'));
+			const roomRef = ref(database, '/rooms/' + roomID);
 			await update(roomRef, game);
 		}
-		win();
 		updateGame();
 	}, [game]);
 		
@@ -179,11 +183,14 @@ export default function MultiScreen() {
     }
   };
 	
-	const renderPlayer = () => {	
+	const renderPlayer = () => {
+		if (!game || Object.keys(game).length === 0) {
+    	return null;
+  	}
     return (
       <>
-        <Image style={{...styles.pawn, left: game.p1x * length, top: game.p1y * length }} source={require('../assets/images/p1Pawn.png')} />
-        <Image style={{...styles.pawn, left: game.p2x * length, top: game.p2y * length }} source={require('../assets/images/p2Pawn.png')} />
+        <Image style={{...styles.pawn, left: game.p1x * length, top: game.p1y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/64f5a7a595ec652823c94f4fcf2abe09"}} />
+        <Image style={{...styles.pawn, left: game.p2x * length, top: game.p2y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/cacb3335a59b92eedefc10dfaf3e9dea"}} />
         {game.turn == true && isMoveValid(game.p1x, game.p1y, 'right') && myName == game.hostName ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
             <View style={{ ...styles.moveTile, left: game.p1x * length + length, top: game.p1y * length }}></View>
@@ -229,6 +236,9 @@ export default function MultiScreen() {
   };
 	
 	const renderWalls = () => {
+		if (!walls || Object.keys(walls).length === 0) {
+    	return null;
+  	}
 		return Object.keys(walls).map((key, index) => {
 			const wall = walls[key];
 			if (wall.type == 'hor') {
@@ -300,24 +310,24 @@ const styles = StyleSheet.create({
   },
   horWall: {
     width: length,
-    height: 10,
+    height: 3,
     backgroundColor: 'white',
     position: 'absolute',
   },
   verWall: {
-    width: 10,
+    width: 3,
     height: length,
     backgroundColor: 'white',
     position: 'absolute',
   },
   fieldHor: {
     width: length,
-    height: 5,
+    height: 3,
     backgroundColor: 'black',
     position: 'absolute',
   },
   fieldVer: {
-    width: 5,
+    width: 3,
     height: length,
     backgroundColor: 'black',
     position: 'absolute',

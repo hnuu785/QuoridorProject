@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.qksksk785.quoridor"
+      "package": "com.qksksk785.quoridor",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
@@ -29,7 +30,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -39,9 +41,15 @@
         "origin": false
       },
       "eas": {
-        "projectId": "9de6a2ac-229b-4dba-aedf-2d303cf994a4"
+        "projectId": "e2bd9a88-6fc8-4b40-ad25-3d9e80871b41"
       }
     },
-	"hostType": "lan"
+    "hostType": "tunnel",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e2bd9a88-6fc8-4b40-ad25-3d9e80871b41"
+    }
   }
 }

@@ -1,7 +1,9 @@
-import { Text, View, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router'
-const { width, height } = Dimensions.get('window');
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from 'react';
 
+const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
   return (
@@ -42,5 +44,6 @@ const styles = StyleSheet.create({
     borderWidth: 10,
     borderColor: 'black',
     marginHorizontal: 30,
+		paddingTop: 10,
   },
 });
