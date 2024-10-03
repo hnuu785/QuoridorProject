@@ -32,14 +32,10 @@ export default function LobbyScreen() {
 		});
   }, []);
 	
-	useEffect(() => {
-    console.log(rooms);
-  }, [rooms]);
-	
 	const createRoom = async () => {
 		const roomId = String(Date.now());
 		try {
-			await AsyncStorage.setItem('myRoomId', roomId);
+			AsyncStorage.setItem('myRoomId', roomId);
 			const roomsRef = ref(database, '/rooms/' + roomId);
 			await set(roomsRef, {
 				hostName: myName,
@@ -48,14 +44,14 @@ export default function LobbyScreen() {
 				p2x: 4,
 				p2y: 8,
 				turn: true,
-				p1HC: 10,
-				p1VC: 10,
-				p2HC: 10,
-				p2VC: 10,
+				p1C: 10,
+				p1C: 10,
+				p2C: 10,
+				p2C: 10,
 				walls: [{type: 'init', left: 0, top: 0}],
 			});
 		}
-		 catch (e) {
+		catch (e) {
 			console.log(e);
 		}
 	};

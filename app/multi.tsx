@@ -8,7 +8,7 @@ import { Link } from 'expo-router';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const length = windowWidth / 9;
+const length = (windowWidth - 55) / 9;
 
 export default function MultiScreen() {
 	const [game, setGame] = useState({});
@@ -16,7 +16,7 @@ export default function MultiScreen() {
 	const [myName, setMyName] = useState('');
 	const [roomID, setRoomID] = useState('');
 	
-	/*useEffect(() => {
+	useEffect(() => {
 		const fetchStorage = async () => {
 			const valueID = await AsyncStorage.getItem('myRoomId');
 			setRoomID(valueID);
@@ -25,9 +25,9 @@ export default function MultiScreen() {
 		};
 		fetchStorage();
 		
-	}, []);*/
+	}, []);
 	
-		useEffect(() => {
+	useEffect(() => {
 		const fetchGame = async () => {
 			const roomRef = ref(database, '/rooms/' + await AsyncStorage.getItem('myRoomId'));
 			await onValue(roomRef, (snapshot) => {
@@ -41,7 +41,6 @@ export default function MultiScreen() {
 					setWalls(snapshot.val());
 				}
 			});
-			setMyName(await AsyncStorage.getItem('myName'));
 		};
 		fetchGame();
 	}, []);
@@ -52,32 +51,33 @@ export default function MultiScreen() {
 			await update(roomRef, game);
 		}
 		updateGame();
+		
 	}, [game]);
 		
 	const renderHor = () => {
 		const hor = [];
-		for (let i = 1; i < 9; i++) {
+		for (let i = 0; i <= 9; i++) {
       for (let j = 0; j < 9; j++) {
 				hor.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-						if (game.turn == true && game.p1HC > 0 && myName == game.hostName) {
+						if (game.turn == true && game.p1C > 0 && myName == game.hostName) {
 							setGame(prevGame => ({
 								...prevGame,
-								p1HC: prevGame.p1HC - 1,
+								p1C: prevGame.p1C - 1,
 								turn: false,
 								walls: [...prevGame.walls, {type: 'hor', left: j, top: i}, {type: 'hor', left: (j + 1), top: i}],
 							}));
 						}
-						else if (game.turn == false && game.p2HC > 0 && myName == game.guestName) {
+						else if (game.turn == false && game.p2C > 0 && myName == game.guestName) {
 							setGame(prevGame => ({
 								...prevGame,
-								p2HC: prevGame.p2HC - 1,
+								p2C: prevGame.p2C - 1,
 								turn: true,
 								walls: [...prevGame.walls, {type: 'hor', left: j, top: i}, {type: 'hor', left: (j + 1), top: i}],
 							}));
 						}
 					}}>
-						<View style={{...styles.fieldHor, left: j * length, top: i * length}}></View>
+						<View style={{...styles.fieldHor, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>
 					</TouchableWithoutFeedback>
 				);
 			}
@@ -88,33 +88,32 @@ export default function MultiScreen() {
 	
 	const renderVer = () => {
     const ver = [];
-    for (let i = 1; i < 9; i++) {
+    for (let i = 0; i <= 9; i++) {
       for (let j = 0; j < 9; j++) {
         ver.push(
           <TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-            if (game.turn == true && game.p1VC > 0) {
+            if (game.turn == true && game.p1C > 0) {
 							setGame(prevGame => ({
 								...prevGame,
-								p1VC: prevGame.p1VC - 1,
+								p1C: prevGame.p1C - 1,
 								turn: false,
 								walls: [...prevGame.walls, {type: 'ver', left: i, top: j}, {type: 'ver', left: i, top: (j + 1)}],
 							}));
             }
-            else if (game.turn == false && game.p2VC > 0) {
+            else if (game.turn == false && game.p2C > 0) {
 							setGame(prevGame => ({
 								...prevGame,
-								p2VC: prevGame.p2VC - 1,
+								p2C: prevGame.p2C - 1,
 								turn: true,
 								walls: [...prevGame.walls, {type: 'ver', left: i, top: j}, {type: 'ver', left: i, top: (j + 1)}],
 							}));
             }
       		}}>
-          	<View style={{...styles.fieldVer, left: i * length, top: j * length}}></View>
+          	<View style={{...styles.fieldVer, left: i * (5 + length), top: j * (length + 5) + 5}}></View>
           </TouchableWithoutFeedback>
 				);
       }
     }
-		
 		return ver;
   };
 	
@@ -189,46 +188,46 @@ export default function MultiScreen() {
   	}
     return (
       <>
-        <Image style={{...styles.pawn, left: game.p1x * length, top: game.p1y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/64f5a7a595ec652823c94f4fcf2abe09"}} />
-        <Image style={{...styles.pawn, left: game.p2x * length, top: game.p2y * length }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/cacb3335a59b92eedefc10dfaf3e9dea"}} />
+        <Image style={{...styles.pawn, left: game.p1x * (5 + length) + 5, top: game.p1y * (5 + length) + 5 }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/64f5a7a595ec652823c94f4fcf2abe09"}} />
+        <Image style={{...styles.pawn, left: game.p2x * (5 + length) + 5, top: game.p2y * (5 + length) + 5 }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/cacb3335a59b92eedefc10dfaf3e9dea"}} />
         {game.turn == true && isMoveValid(game.p1x, game.p1y, 'right') && myName == game.hostName ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: game.p1x * length + length, top: game.p1y * length }}></View>
+            <View style={{ ...styles.moveTile, left: (game.p1x + 1) * (5 + length) + 5, top: game.p1y * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false && isMoveValid(game.p2x, game.p2y, 'right') && myName == game.guestName ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
-            <View style={{ ...styles.moveTile, left: game.p2x * length + length, top: game.p2y * length }}></View>
+            <View style={{ ...styles.moveTile, left: (game.p2x + 1) * (5 + length) + 5, top: game.p2y * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true && isMoveValid(game.p1x, game.p1y, 'left') && myName == game.hostName ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: game.p1x * length - length, top: game.p1y * length }}></View>
+            <View style={{ ...styles.moveTile, left: (game.p1x - 1) * (5 + length) + 5, top: game.p1y * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false && isMoveValid(game.p2x, game.p2y, 'left') && myName == game.guestName ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
-            <View style={{ ...styles.moveTile, left: game.p2x * length - length, top: game.p2y * length }}></View>
+            <View style={{ ...styles.moveTile, left: (game.p2x - 1) * (5 + length) + 5, top: game.p2y * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true && isMoveValid(game.p1x, game.p1y, 'up') && myName == game.hostName ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: game.p1x * length, top: (game.p1y - 1) * length }}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * (5 + length) + 5, top: (game.p1y - 1) * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false && isMoveValid(game.p2x, game.p2y, 'up') && myName == game.guestName ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
-            <View style={{ ...styles.moveTile, left: game.p2x * length, top: (game.p2y - 1) * length }}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * (5 + length) + 5, top: (game.p2y - 1) * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ): null}
         {game.turn == true && isMoveValid(game.p1x, game.p1y, 'down') && myName == game.hostName ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: game.p1x * length, top: (game.p1y + 1) * length }}></View>
+            <View style={{ ...styles.moveTile, left: game.p1x * (5 + length) + 5, top: (game.p1y + 1) * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ) : null}
         {game.turn == false && isMoveValid(game.p2x, game.p2y, 'down') && myName == game.guestName ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
-            <View style={{ ...styles.moveTile, left: game.p2x * length, top: (game.p2y + 1) * length }}></View>
+            <View style={{ ...styles.moveTile, left: game.p2x * (5 + length) + 5, top: (game.p2y + 1) * (5 + length) + 5 }}></View>
           </TouchableWithoutFeedback>
         ): null}
       </>
@@ -242,9 +241,9 @@ export default function MultiScreen() {
 		return Object.keys(walls).map((key, index) => {
 			const wall = walls[key];
 			if (wall.type == 'hor') {
-				return (<View key={`wall-${index}`} style={{...styles.horWall, left: wall.left * length, top: wall.top * length}}></View>);
+				return (<View key={`wall-${index}`} style={{...styles.horWall, left: wall.left * (5 + length) + 5, top: wall.top * (5 + length)}}></View>);
 			} else if (wall.type == 'ver') {
-				return (<View key={`wall-${index}`} style={{...styles.verWall, left: wall.left * length, top: wall.top * length}}></View>);
+				return (<View key={`wall-${index}`} style={{...styles.verWall, left: wall.left * (5 + length), top: wall.left * (length + 5) + 5}}></View>);
 			}
 		})
 	};
@@ -307,27 +306,28 @@ const styles = StyleSheet.create({
     height: length,
     position: 'absolute',
     backgroundColor: 'teal',
+		opacity: 0.5,
   },
   horWall: {
     width: length,
-    height: 3,
+    height: 5,
     backgroundColor: 'white',
     position: 'absolute',
   },
   verWall: {
-    width: 3,
+    width: 5,
     height: length,
     backgroundColor: 'white',
     position: 'absolute',
   },
   fieldHor: {
     width: length,
-    height: 3,
+    height: 5,
     backgroundColor: 'black',
     position: 'absolute',
   },
   fieldVer: {
-    width: 3,
+    width: 5,
     height: length,
     backgroundColor: 'black',
     position: 'absolute',
