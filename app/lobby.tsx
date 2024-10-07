@@ -45,8 +45,6 @@ export default function LobbyScreen() {
 				p2y: 8,
 				turn: true,
 				p1C: 10,
-				p1C: 10,
-				p2C: 10,
 				p2C: 10,
 				walls: [{type: 'init', left: 0, top: 0}],
 			});
