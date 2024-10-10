@@ -33,9 +33,9 @@ export default function SingleScreen() {
 	
 	const isThroughSquare = (x, y) => {
 		for (let i of Object.keys(squares)) {
-			const squareLeft = squares[i].left;
-			const squareTop = squares[i].top;
-			if ((squareLeft - length <= x + 1 && squareLeft - length >= x && squareTop <= y && squareTop >= y) || (squareTop - length <= y && squareLeft >= x && squareTop - length >= y && squareLeft <= x)) {
+			console.log(squares[i].top+' '+squares[i].left);
+			if ((Math.abs(squares[i].left - x) <= length + 1 && Math.abs(squares[i].top - y) <= 1 ) || (Math.abs(squares[i].left - x) <= 1 && Math.abs(squares[i].top - y) <= length + 1)) {
+				console.log('through2');
 				return true;
 			}
 		}
@@ -237,7 +237,9 @@ export default function SingleScreen() {
 				{renderPlayer()}
 				{walls}
 				{squares}
-				
+				{console.log(walls)}
+				{console.log(squares)}
+				{console.log(length)}
 	    </View>
 			<Link href='/' asChild>
 				<TouchableWithoutFeedback>
