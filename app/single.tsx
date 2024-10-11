@@ -31,7 +31,10 @@ export default function SingleScreen() {
 		win();
 	}, [p1y, p2y]);
 	
-	const isThroughSquare = (x, y) => {
+	const isThrough = (x, y) => {
+		if (Math.abs(8 * (5 + length) + 5 - x) <= 1 || Math.abs(8 * (5 + length) + 5 - y) <= 1) {
+			return true;
+		}
 		for (let i of Object.keys(squares)) {
 			if (squares[i].type == 'hor') {
 				let squareX = squares[i].x * (5 + length) + 5 + length;
@@ -47,6 +50,21 @@ export default function SingleScreen() {
 				}
 			}
 		}
+		for (let i of Object.keys(walls)) {
+			if (walls[i].type == 'hor') {
+				let wallX = walls[i].x * (5 + length) + 5;
+				let wallY = walls[i].y * (5 + length);
+				if (wallX - x <= 5 + length + 1 && wallX > x && Math.abs(wallY - y) <= 1) {
+					return true;
+				}
+			} else if (walls[i].type == 'ver') {
+				let wallX = walls[i].x * (5 + length);
+				let wallY = walls[i].y * (5 + length) + 5;
+				if (Math.abs(wallX - x) <= 1 && wallY - y <= 5 + length + 1 && wallY > y) {
+					return true;
+				}
+			}
+		}
 		return false;
 	};
 	
@@ -56,13 +74,12 @@ export default function SingleScreen() {
       for (let j = 0; j < 9; j++) {
 				hor.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-						if (turn == true && p1C > 0 && !isThroughSquare(j * (5 + length) + 5, i * (5 + length))) {
+						if (turn == true && p1C > 0 && !isThrough(j * (5 + length) + 5, i * (5 + length))) {
 							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}])
 							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
 							setP1C(p1C - 1);
 							setTurn(false);
-						}
-						else if (turn == false && p2C > 0 && !isThroughSquare(j * (5 + length) + 5, i * (5 + length))) {
+						} else if (turn == false && p2C > 0 && !isThrough(j * (5 + length) + 5, i * (5 + length))) {
 							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}]);
 							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
 							setP2C(p2C - 1);
@@ -84,13 +101,13 @@ export default function SingleScreen() {
       for (let j = 0; j < 9; j++) {
 				ver.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-						if (turn == true && p1C > 0 && !isThroughSquare(i * (5 + length), j * (length + 5) + 5)) {
+						if (turn == true && p1C > 0 && !isThrough(i * (5 + length), j * (length + 5) + 5)) {
 							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
 							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
 							setP1C(p1C - 1);
 							setTurn(false);
 						}
-						else if (turn == false && p2C > 0 && !isThroughSquare(i * (5 + length), j * (length + 5) + 5)) {
+						else if (turn == false && p2C > 0 && !isThrough(i * (5 + length), j * (length + 5) + 5)) {
 							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
 							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
 							setP2C(p2C - 1);
