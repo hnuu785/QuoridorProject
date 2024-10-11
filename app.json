@@ -44,7 +44,7 @@
         "projectId": "e2bd9a88-6fc8-4b40-ad25-3d9e80871b41"
       }
     },
-    "hostType": "lan",
+    "hostType": "tunnel",
     "runtimeVersion": {
       "policy": "appVersion"
     },

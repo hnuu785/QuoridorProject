@@ -199,16 +199,16 @@ export default function SingleScreen() {
 			if (walls[i].type == 'hor') {
 				let wallX = walls[i].x * (5 + length) + 5;
 				let wallY = walls[i].y * (5 + length);
-				if (direction == 'right' && wallX == x * (5 + length) + 5 + length && wallY == y * (5 + length) + 5) {
+				if (direction == 'right' && Math.abs(x * (5 + length) + 5 + length - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'left' && wallX == x * (5 + length) + 5 - 5  && wallY == y * (5 + length) + 5) {
+				if (direction == 'left' && Math.abs(x * (5 + length) + 5 - 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'up' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 - 5) {
+				if (direction == 'up' && Math.abs(x * (5 + length) + 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'down' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 + length) {
+				if (direction == 'down' && Math.abs(x * (5 + length) + 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 + length - wallY) <= 1) {
 					return false;
 				}
 				if (direction == 'up' && y == 0) {
@@ -220,16 +220,16 @@ export default function SingleScreen() {
 			} else if (walls[i].type == 'ver') {
 				let wallX = walls[i].x * (5 + length);
 				let wallY = walls[i].y * (5 + length) + 5;
-				if (direction == 'right' && wallX == x * (5 + length) + 5 + length && wallY == y * (5 + length) + 5) {
+				if (direction == 'right' && Math.abs(x * (5 + length) + 5 + length - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'left' && wallX == x * (5 + length) + 5 - 5  && wallY == y * (5 + length) + 5) {
+				if (direction == 'left' && Math.abs(x * (5 + length) + 5 - 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'up' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 - 5) {
+				if (direction == 'up' && Math.abs(x * (5 + length) + 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 - 5 - wallY) <= 1) {
 					return false;
 				}
-				if (direction == 'down' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 + length) {
+				if (direction == 'down' && Math.abs(x * (5 + length) + 5 - wallX) <= 1 && Math.abs(y * (5 + length) + 5 + length - wallY) <= 1) {
 					return false;
 				}
 			}
