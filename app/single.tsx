@@ -33,10 +33,18 @@ export default function SingleScreen() {
 	
 	const isThroughSquare = (x, y) => {
 		for (let i of Object.keys(squares)) {
-			console.log(squares[i].top+' '+squares[i].left);
-			if ((Math.abs(squares[i].left - x) <= length + 1 && Math.abs(squares[i].top - y) <= 1 ) || (Math.abs(squares[i].left - x) <= 1 && Math.abs(squares[i].top - y) <= length + 1)) {
-				console.log('through2');
-				return true;
+			if (squares[i].type == 'hor') {
+				let squareX = squares[i].x * (5 + length) + 5 + length;
+				let squareY = squares[i].y * (5 + length);
+				if ((Math.abs(squareX - x) <= length + 1 && Math.abs(squareY - y) <= 1 ) || (Math.abs(squareX - x) <= 1 && Math.abs(squareY - y) <= length + 1)) {
+					return true;
+				}
+			} else if (squares[i].type == 'ver') {
+				let squareX = squares[i].x * (5 + length);
+				let squareY = squares[i].y * (5 + length) + 5 + length;
+				if ((Math.abs(squareX - x) <= length + 1 && Math.abs(squareY - y) <= 1 ) || (Math.abs(squareX - x) <= 1 && Math.abs(squareY - y) <= length + 1)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -44,33 +52,24 @@ export default function SingleScreen() {
 	
   const renderHor = () => {
     const hor = [];
-		const horWall = [];
     for (let i = 0; i <= 9; i++) {
       for (let j = 0; j < 9; j++) {
 				hor.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
 						if (turn == true && p1C > 0 && !isThroughSquare(j * (5 + length) + 5, i * (5 + length))) {
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-1`} style={{...styles.horWall, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>]);
-							setSquares(currentSquares => [...currentSquares,
-							<View key={`${i}-${j}-2`} style={{...styles.square, left: j * (5 + length) + 5 + length, top: i * (5 + length)}}></View>]);
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-3`} style={{...styles.horWall, left: (j + 1) * (5 + length) + 5, top: i * (5 + length)}}></View>]);
+							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}])
+							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
 							setP1C(p1C - 1);
 							setTurn(false);
 						}
 						else if (turn == false && p2C > 0 && !isThroughSquare(j * (5 + length) + 5, i * (5 + length))) {
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-1`} style={{...styles.horWall, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>]);
-							setSquares(currentSquares => [...currentSquares,
-							<View key={`${i}-${j}-2`} style={{...styles.square, left: j * (5 + length) + 5 + length, top: i * (5 + length)}}></View>]);
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-3`} style={{...styles.horWall, left: (j + 1) * (5 + length) + 5, top: i * (5 + length)}}></View>]);
+							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}]);
+							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
 							setP2C(p2C - 1);
 							setTurn(true);
 						}
 					}}>
-					<View style={{...styles.fieldHor, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>
+						<View style={{...styles.fieldHor, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>
 					</TouchableWithoutFeedback>
 				);
       }
@@ -86,27 +85,19 @@ export default function SingleScreen() {
 				ver.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
 						if (turn == true && p1C > 0 && !isThroughSquare(i * (5 + length), j * (length + 5) + 5)) {
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-1`} style={{...styles.verWall, left: i * (5 + length), top: j * (length + 5) + 5}}></View>]);
-							setSquares(currentSquares => [...currentSquares,
-							<View key={`${i}-${j}-2`} style={{...styles.square, left: i * (5 + length), top: j * (length + 5) + 5 + length}}></View>]);
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-3`} style={{...styles.verWall, left: i * (5 + length), top: (j + 1) * (length + 5) + 5}}></View>]);
+							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
+							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
 							setP1C(p1C - 1);
 							setTurn(false);
 						}
 						else if (turn == false && p2C > 0 && !isThroughSquare(i * (5 + length), j * (length + 5) + 5)) {
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-1`} style={{...styles.verWall, left: i * (5 + length), top: j * (length + 5) + 5}}></View>]);
-							setSquares(currentSquares => [...currentSquares,
-							<View key={`${i}-${j}-2`} style={{...styles.square, left: i * (5 + length), top: j * (length + 5) + 5 + length}}></View>]);
-							setWalls(currentWalls => [...currentWalls,
-							<View key={`${i}-${j}-3`} style={{...styles.verWall, left: i * (5 + length), top: (j + 1) * (length + 5) + 5}}></View>]);
+							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
+							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
 							setP2C(p2C - 1);
 							setTurn(true);
 						}
 					}}>
-					<View style={{...styles.fieldVer, left: i * (5 + length), top: j * (length + 5) + 5}}></View>
+						<View style={{...styles.fieldVer, left: i * (5 + length), top: j * (length + 5) + 5}}></View>
 					</TouchableWithoutFeedback>
 				);
       }
@@ -204,22 +195,45 @@ export default function SingleScreen() {
   };
 
 	const isMoveValid = (x, y, direction) => {
-    for (let wall of walls) {
-			const wallLeft = wall.props.style.left;
-			const wallTop = wall.props.style.top;
-      if (direction == 'right' && wallLeft == x * (5 + length) + 5 + length && wallTop == y * (5 + length) + 5) {
-        return false;
-      }
-      if (direction == 'left' && wallLeft == x * (5 + length) + 5 - 5  && wallTop == y * (5 + length) + 5) {
-        return false;
-      }
-      if (direction == 'up' && wallLeft == x * (5 + length) + 5 && wallTop == y * (5 + length) + 5 - 5) {
-        return false;
-      }
-      if (direction == 'down' && wallLeft == x * (5 + length) + 5 && wallTop == y * (5 + length) + 5 + length) {
-        return false;
-      }
-    }
+		for (let i of Object.keys(walls)) {
+			if (walls[i].type == 'hor') {
+				let wallX = walls[i].x * (5 + length) + 5;
+				let wallY = walls[i].y * (5 + length);
+				if (direction == 'right' && wallX == x * (5 + length) + 5 + length && wallY == y * (5 + length) + 5) {
+					return false;
+				}
+				if (direction == 'left' && wallX == x * (5 + length) + 5 - 5  && wallY == y * (5 + length) + 5) {
+					return false;
+				}
+				if (direction == 'up' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 - 5) {
+					return false;
+				}
+				if (direction == 'down' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 + length) {
+					return false;
+				}
+				if (direction == 'up' && y == 0) {
+					return false;
+				}
+				if (direction == 'down' && y == 8) {
+					return false;
+				}
+			} else if (walls[i].type == 'ver') {
+				let wallX = walls[i].x * (5 + length);
+				let wallY = walls[i].y * (5 + length) + 5;
+				if (direction == 'right' && wallX == x * (5 + length) + 5 + length && wallY == y * (5 + length) + 5) {
+					return false;
+				}
+				if (direction == 'left' && wallX == x * (5 + length) + 5 - 5  && wallY == y * (5 + length) + 5) {
+					return false;
+				}
+				if (direction == 'up' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 - 5) {
+					return false;
+				}
+				if (direction == 'down' && wallX == x * (5 + length) + 5 && wallY == y * (5 + length) + 5 + length) {
+					return false;
+				}
+			}
+		}
 		if (direction == 'up' && y == 0) {
 			return false;
 		}
@@ -229,17 +243,42 @@ export default function SingleScreen() {
     return true;
   };
 
+  const renderWalls = () => {
+		return Object.keys(walls).map((key, index) => {
+			if (walls[key].type == 'hor') {
+				let wallX = walls[key].x * (5 + length) + 5;
+				let wallY = walls[key].y * (5 + length);
+				return (<View key={`wall-${index}`} style={{...styles.horWall, left: wallX, top: wallY}}></View>);
+			} else if (walls[key].type == 'ver') {
+				let wallX = walls[key].x * (5 + length);
+				let wallY = walls[key].y * (5 + length) + 5;
+				return (<View key={`wall-${index}`} style={{...styles.verWall, left: wallX, top: wallY}}></View>);
+			}
+		})
+	};
+
+	const renderSquares = () => {
+		return Object.keys(squares).map((key, index) => {
+			if (squares[key].type == 'hor') {
+				let squareX = squares[key].x * (5 + length) + 5 + length;
+				let squareY = squares[key].y * (5 + length);
+				return (<View key={`square-${index}`} style={{...styles.square, left: squareX, top: squareY}}></View>);
+			} else if (squares[key].type == 'ver') {
+				let squareX = squares[key].x * (5 + length);
+				let squareY = squares[key].y * (5 + length) + 5 + length;
+				return (<View key={`square-${index}`} style={{...styles.square, left: squareX, top: squareY}}></View>);
+			}
+		})
+	};
+
   return (
 		<View style={styles.Container}>
 	    <View style={styles.gameContainer}>
 				{renderHor()}
 				{renderVer()}
 				{renderPlayer()}
-				{walls}
-				{squares}
-				{console.log(walls)}
-				{console.log(squares)}
-				{console.log(length)}
+				{renderWalls()}
+				{renderSquares()}
 	    </View>
 			<Link href='/' asChild>
 				<TouchableWithoutFeedback>
