@@ -31,36 +31,36 @@ export default function SingleScreen() {
 		win();
 	}, [p1y, p2y]);
 	
-	const isThrough = (x, y) => {
-		if (Math.abs(8 * (5 + length) + 5 - x) <= 1 || Math.abs(8 * (5 + length) + 5 - y) <= 1) {
+	const isThrough = (wl, wt) => {
+		if (Math.abs(8 * (5 + length) + 5 - wl) <= 1 || Math.abs(8 * (5 + length) + 5 - wt) <= 1) {
 			return true;
 		}
 		for (let i of Object.keys(squares)) {
 			if (squares[i].type == 'hor') {
-				let squareX = squares[i].x * (5 + length) + 5 + length;
-				let squareY = squares[i].y * (5 + length);
-				if ((Math.abs(squareX - x) <= length + 1 && Math.abs(squareY - y) <= 1 ) || (Math.abs(squareX - x) <= 1 && Math.abs(squareY - y) <= length + 1)) {
+				let squareLeft = squares[i].x * (5 + length) + 5 + length;
+				let squareTop = squares[i].y * (5 + length);
+				if ((Math.abs(squareLeft - wl) <= length + 1 && Math.abs(squareTop - wt) <= 1 ) || (Math.abs(squareLeft - wl) <= 1 && Math.abs(squareTop - wt) <= length + 1)) {
 					return true;
 				}
 			} else if (squares[i].type == 'ver') {
-				let squareX = squares[i].x * (5 + length);
-				let squareY = squares[i].y * (5 + length) + 5 + length;
-				if ((Math.abs(squareX - x) <= length + 1 && Math.abs(squareY - y) <= 1 ) || (Math.abs(squareX - x) <= 1 && Math.abs(squareY - y) <= length + 1)) {
+				let squareLeft = squares[i].x * (5 + length);
+				let squareTop = squares[i].y * (5 + length) + 5 + length;
+				if ((Math.abs(squareLeft - wl) <= length + 1 && Math.abs(squareTop - wt) <= 1 ) || (Math.abs(squareLeft - wl) <= 1 && Math.abs(squareTop - wt) <= length + 1)) {
 					return true;
 				}
 			}
 		}
 		for (let i of Object.keys(walls)) {
 			if (walls[i].type == 'hor') {
-				let wallX = walls[i].x * (5 + length) + 5;
-				let wallY = walls[i].y * (5 + length);
-				if (wallX - x <= 5 + length + 1 && wallX > x && Math.abs(wallY - y) <= 1) {
+				let wallLeft = walls[i].x * (5 + length) + 5;
+				let wallTop = walls[i].y * (5 + length);
+				if (wallLeft - wl <= 5 + length + 1 && wallLeft > wl && Math.abs(wallTop - wt) <= 1) {
 					return true;
 				}
 			} else if (walls[i].type == 'ver') {
-				let wallX = walls[i].x * (5 + length);
-				let wallY = walls[i].y * (5 + length) + 5;
-				if (Math.abs(wallX - x) <= 1 && wallY - y <= 5 + length + 1 && wallY > y) {
+				let wallLeft = walls[i].x * (5 + length);
+				let wallTop = walls[i].y * (5 + length) + 5;
+				if (Math.abs(wallLeft - wl) <= 1 && wallTop - wt <= 5 + length + 1 && wallTop > wt) {
 					return true;
 				}
 			}
@@ -68,22 +68,93 @@ export default function SingleScreen() {
 		return false;
 	};
 	
+	// BFS를 사용하여 목적지까지 도달할 수 있는지 확인하는 함수
+	const canReachDestination = (startX, startY, targetY, walls) => {
+		const queue = [[startX, startY]];
+		const visited = Array(9).fill().map(() => Array(9).fill(false));
+		visited[startX][startY] = true;
+
+		const directions = [
+			[0, 1],  // 아래로 이동
+			[0, -1], // 위로 이동
+			[1, 0],  // 오른쪽으로 이동
+			[-1, 0], // 왼쪽으로 이동
+		];
+
+		while (queue.length > 0) {
+			const [x, y] = queue.shift();
+
+			// 플레이어가 목표 지점에 도달한 경우
+			if (y === targetY) {
+				return true;
+			}
+
+			for (let [dx, dy] of directions) {
+				const newX = x + dx;
+				const newY = y + dy;
+
+				// 새로운 좌표가 유효한 범위 내에 있고, 방문하지 않았으며, 해당 방향으로 이동이 가능한 경우
+				if (newX >= 0 && newX < 9 && newY >= 0 && newY < 9 && !visited[newX][newY] && isMoveValid(x, y, dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up', walls)) {
+					visited[newX][newY] = true;
+					queue.push([newX, newY]);
+				}
+			}
+		}
+		// 목표 지점에 도달할 수 없을 때 false 반환
+		console.log('cant destination');
+		return false;
+	};
+	
+	const canPlaceWall = (type, wallX, wallY) => {
+		if (type == 'hor' && !isThrough(wallX * (5 + length) + 5, wallY * (5 + length))) {
+			let tryWalls = [...walls, {type: type, x: wallX, y: wallY}, {type: type, x: wallX + 1, y: wallY}];
+			let trySquares = [...squares, {type: type, x: wallX, y: wallY}];
+			if (canReachDestination(p1x, p1y, 8, tryWalls) && canReachDestination(p2x, p2y, 0, tryWalls)) {
+				setWalls(tryWalls);
+				setSquares(trySquares)
+				console.log('canDestination');
+				return true;
+			}
+			else {
+				console.log('cantplaceWall!');
+				return false;
+			}
+		} else if (type == 'ver' && !isThrough(wallX * (5 + length), wallY * (5 + length) + 5)) {
+			let tryWalls = [...walls, {type: type, x: wallX, y: wallY}, {type: type, x: wallX, y: wallY + 1}];
+			let trySquares = [...squares, {type: type, x: wallX, y: wallY}];
+			if (canReachDestination(p1x, p1y, 8, tryWalls) && canReachDestination(p2x, p2y, 0, tryWalls)) {
+				setWalls(tryWalls);
+				setSquares(trySquares)
+				console.log('canDestination');
+				return true;
+			}
+			else {
+				console.log('cantplaceWall!');
+				return false;
+			}
+		}
+		else {
+			console.log('isThrough!');
+			return false;
+		}
+	};
+
   const renderHor = () => {
     const hor = [];
     for (let i = 0; i <= 9; i++) {
       for (let j = 0; j < 9; j++) {
 				hor.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-						if (turn == true && p1C > 0 && !isThrough(j * (5 + length) + 5, i * (5 + length))) {
-							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}])
-							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
-							setP1C(p1C - 1);
-							setTurn(false);
-						} else if (turn == false && p2C > 0 && !isThrough(j * (5 + length) + 5, i * (5 + length))) {
-							setWalls(currentWalls => [...currentWalls, {type: 'hor', x: j, y: i}, {type: 'hor', x: j + 1, y: i}]);
-							setSquares(currentSquares => [...currentSquares, {type: 'hor', x: j, y: i}]);
-							setP2C(p2C - 1);
-							setTurn(true);
+						if (turn == true && p1C > 0) {
+							if (canPlaceWall('hor', j, i)) {
+								setP1C(p1C - 1);
+								setTurn(false);
+							}
+						} else if (turn == false && p2C > 0) {
+							if (canPlaceWall('hor', j, i)) {
+								setP2C(p2C - 1);
+								setTurn(true);
+							}
 						}
 					}}>
 						<View style={{...styles.fieldHor, left: j * (5 + length) + 5, top: i * (5 + length)}}></View>
@@ -96,22 +167,20 @@ export default function SingleScreen() {
 	
 	const renderVer = () => {
     const ver = [];
-		const verWall = [];
     for (let i = 0; i <= 9; i++) {
       for (let j = 0; j < 9; j++) {
 				ver.push(
 					<TouchableWithoutFeedback key={`${i}-${j}`} onPress={() => {
-						if (turn == true && p1C > 0 && !isThrough(i * (5 + length), j * (length + 5) + 5)) {
-							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
-							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
-							setP1C(p1C - 1);
-							setTurn(false);
-						}
-						else if (turn == false && p2C > 0 && !isThrough(i * (5 + length), j * (length + 5) + 5)) {
-							setWalls(currentWalls => [...currentWalls, {type: 'ver', x: i, y: j}, {type: 'ver', x: i, y: j + 1}]);
-							setSquares(currentSquares => [...currentSquares, {type: 'ver', x: i, y: j}]);
-							setP2C(p2C - 1);
-							setTurn(true);
+						if (turn == true && p1C > 0) {
+							if (canPlaceWall('ver', i, j)) {
+								setP1C(p1C - 1);
+								setTurn(false);
+							}
+						} else if (turn == false && p2C > 0) {
+							if (canPlaceWall('ver', i, j)) {
+								setP2C(p2C - 1);
+								setTurn(true);
+							}
 						}
 					}}>
 						<View style={{...styles.fieldVer, left: i * (5 + length), top: j * (length + 5) + 5}}></View>
@@ -167,42 +236,42 @@ export default function SingleScreen() {
       <>
 				<Image style={{...styles.pawn, left: p1x * (5 + length) + 5, top: p1y * (5 + length) + 5 }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/64f5a7a595ec652823c94f4fcf2abe09"}}/>
         <Image style={{...styles.pawn, left: p2x * (5 + length) + 5, top: p2y * (5 + length) + 5 }} source={{uri: "https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/cacb3335a59b92eedefc10dfaf3e9dea"}}/>
-        {turn == true && isMoveValid(p1x, p1y, 'right') ? (
+        {turn == true && isMoveValid(p1x, p1y, 'right', walls) ? (
           <TouchableWithoutFeedback onPress={playerMoveRight}>
             <View style={{ ...styles.moveTile, left: (p1x + 1) * (5 + length) + 5 + length * 0.3, top: p1y * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
         ) : null }
-				{turn == false && isMoveValid(p2x, p2y, 'right') ? (
+				{turn == false && isMoveValid(p2x, p2y, 'right', walls) ? (
 					<TouchableWithoutFeedback onPress={playerMoveRight}>
             <View style={{ ...styles.moveTile, left: (p2x + 1) * (5 + length) + 5 + length * 0.3, top: p2y * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
 				) : null }
-        {turn == true && isMoveValid(p1x, p1y, 'left') ? (
+        {turn == true && isMoveValid(p1x, p1y, 'left', walls) ? (
           <TouchableWithoutFeedback onPress={playerMoveLeft}>
             <View style={{ ...styles.moveTile, left: (p1x - 1) * (5 + length) + 5 + length * 0.3, top: p1y * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
         ) : null }
-				{turn == false && isMoveValid(p2x, p2y, 'left') ? (
+				{turn == false && isMoveValid(p2x, p2y, 'left', walls) ? (
 					<TouchableWithoutFeedback onPress={playerMoveLeft}>
             <View style={{ ...styles.moveTile, left: (p2x - 1) * (5 + length) + 5 + length * 0.3, top: p2y * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
 				) : null }
-        {turn == true && isMoveValid(p1x, p1y, 'up') ? (
+        {turn == true && isMoveValid(p1x, p1y, 'up', walls) ? (
           <TouchableWithoutFeedback onPress={playerMoveUp}>
             <View style={{ ...styles.moveTile, left: p1x * (5 + length) + 5 + length * 0.3, top: (p1y - 1) * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
         ) : null }
-				{turn == false && isMoveValid(p2x, p2y, 'up') ? (
+				{turn == false && isMoveValid(p2x, p2y, 'up', walls) ? (
 					<TouchableWithoutFeedback onPress={playerMoveUp}>
             <View style={{ ...styles.moveTile, left: p2x * (5 + length) + 5 + length * 0.3, top: (p2y - 1) * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
 				) : null }
-				{turn == true && isMoveValid(p1x, p1y, 'down') ? (
+				{turn == true && isMoveValid(p1x, p1y, 'down', walls) ? (
           <TouchableWithoutFeedback onPress={playerMoveDown}>
             <View style={{ ...styles.moveTile, left: p1x * (5 + length) + 5 + length * 0.3, top: (p1y + 1) * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
         ) : null }
-				{turn == false && isMoveValid(p2x, p2y, 'down') ? (
+				{turn == false && isMoveValid(p2x, p2y, 'down', walls) ? (
 					<TouchableWithoutFeedback onPress={playerMoveDown}>
             <View style={{ ...styles.moveTile, left: p2x * (5 + length) + 5 + length * 0.3, top: (p2y + 1) * (5 + length) + 5 + length * 0.3 }}></View>
           </TouchableWithoutFeedback>
@@ -211,7 +280,7 @@ export default function SingleScreen() {
     );
   };
 
-	const isMoveValid = (x, y, direction) => {
+	const isMoveValid = (x, y, direction, walls) => {
 		for (let i of Object.keys(walls)) {
 			if (walls[i].type == 'hor') {
 				let wallX = walls[i].x * (5 + length) + 5;
@@ -296,6 +365,7 @@ export default function SingleScreen() {
 				{renderPlayer()}
 				{renderWalls()}
 				{renderSquares()}
+				{console.log(canReachDestination(p1x, p1y, 8, walls))}
 	    </View>
 			<Link href='/' asChild>
 				<TouchableWithoutFeedback>
