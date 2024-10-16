@@ -46,7 +46,9 @@ export default function LobbyScreen() {
 				turn: true,
 				p1C: 10,
 				p2C: 10,
-				walls: [{type: 'init', left: 0, top: 0}],
+				walls: [{type: 'init', x: 0, y: 0}],
+				squares: [{type: 'init', x: 0, y: 0}],
+				moves: [{p1x: 4, p1y: 0, p2x: 4, p2y: 8}],
 			});
 		}
 		catch (e) {
